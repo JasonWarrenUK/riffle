@@ -1,89 +1,67 @@
-# Riffle
+<!-- doc-readme: generated 2026-09-25. Delete this line once you hand-edit this file. -->
+# engine
 
-A Svelte 5 reactive game engine for interactive fiction compiled by [DendryNexus](<https://github.com/JasonWarrenUK/dendrynexus>). Riffle wraps compiled game JSON in a fully reactive runtime, powering branching narratives with player choices, difficulty checks, card/deck mechanics, and quality systems.
+Svelte 5 reactive wrapper that turns compiled DendryNexus game data (`static/*.json`) into live game state, plus a standalone arena-topology module for the flyting contest's spatial layout.
 
-## Features
+## Overview
 
-- **Reactive state** — Built on Svelte 5 runes (`$state`, `$derived`) for automatic UI updates
-- **Branching narrative** — Scene navigation with conditional go-to, go-to-ref, set-root, and game-over states
-- **Choice system** — Priority, frequency, and order-based selection with viewability/choosability conditions, tag expansion (`#tag`), and min/max limits
-- **Difficulty checks** — Broad and narrow difficulty curves with configurable scalers, human-readable labels (*almost impossible* → *straightforward*), and roll tracking
-- **Card/deck/hand system** — Draw, play, and discard cards across multiple hands with pinned cards, max hand sizes, and per-hand state
-- **Quality system** — Named attributes with typed display (integer, fudge, on/off, word scale, raw) and min/max clamping
-- **Content rendering** — Quality interpolation (`[+ qualityName +]`), conditional text (`[? if condition : text ?]`), and markdown-style formatting
-- **Arena topology** — Concentric-circle spatial system (inner/middle/outer rings, 13 zones) with adjacency relationships
+This is the runtime half of the DendryNexus integration described in the project root `CLAUDE.md`: `scripts/compile-dendry.js` compiles `.dry` story files into JSON, and everything in this directory consumes that JSON and turns it into `$state`/`$derived` reactive game state for the UI. No Handlebars, no Browserify, no upstream Dendry browser runtime.
 
-## Structure
+`src/components/SceneView.svelte` and friends render off `RiffleEngine.display`; `src/routes/+page.svelte` owns the engine instance. `src/components/ArenaMap.svelte` renders the zone layout from `arena.ts`.
 
-```
-index.ts              Main exports
-engine.svelte.ts      Core game engine (RiffleEngine class)
-types.ts              TypeScript type definitions for compiled game data
-arena.ts              Arena topology and spatial adjacency utilities
+## API / Exports
+
+Via `index.ts`:
+
+```ts
+import { RiffleEngine } from '$engine';
+import type { CheckResult } from '$engine';
+import { ZONES, getZone, getAdjacent, areAdjacent, INNER_ZONES, MIDDLE_SECTORS, OUTER_QUARTERS } from '$engine';
+import type { Ring, Zone } from '$engine';
 ```
 
-## Usage
+### `RiffleEngine` (`engine.svelte.ts`)
 
-```typescript
-import { RiffleEngine } from 'riffle';
+A class holding all reactive game state. One instance per game session.
 
+```ts
 const engine = new RiffleEngine();
-await engine.load('/path/to/game.json');
+await engine.load('/great-hall.json');
 
-// Reactive state (Svelte 5 runes)
-engine.display;       // Current scene content and choices
-engine.qualityList;   // All qualities with current values
-engine.lastCheck;     // Last difficulty check result
+engine.display;      // DisplayContent | null, title/body/choices ready to render
+engine.qualityList;  // current quality values, for a stats sidebar
+engine.lastCheck;    // CheckResult | null, most recent difficulty-check outcome
 
-// Player actions
-engine.choose('scene-id');          // Navigate to a scene
-engine.drawCard('deck-id');         // Draw a card from a deck
-engine.playCard('card-id');         // Play a card from hand
-engine.playPinnedCard('card-id');   // Play a pinned card
-engine.discardCard('card-id');      // Discard without playing
-engine.restart();                   // Restart the game
+engine.choose(sceneId);        // navigate to a scene
+engine.drawCard(deckId);       // draw a card into the current hand
+engine.playCard(cardId);       // play a hand card
+engine.playPinnedCard(cardId); // play a pinned card (no hand slot)
+engine.discardCard(cardId);    // discard a hand card unplayed
+engine.restart();              // reset to initial state, same game data
 ```
 
-## API
+Internally it implements the full DendryNexus feature set: priority/frequency choice selection, the card/deck/hand system, pinned cards, tag-based choices (`#tag`), conditional go-to / go-to-ref / set-root, max-visits filtering, min/max-choices, broad and narrow difficulty checks, and content markup rendering (bold, italic, quality interpolation, conditional text). See `docs/dendrynexus-reference.md` at the project root for the upstream semantics this reimplements.
 
-### `RiffleEngine`
+### `types.ts`
 
-| Member | Type | Description |
-|---|---|---|
-| `game` | `CompiledGame \| null` | Loaded game data |
-| `state` | `GameState` | Current game state (qualities, visits, history, hands) |
-| `loading` | `boolean` | Whether a game is currently loading |
-| `error` | `string \| null` | Error message from last load attempt |
-| `currentScene` | `GameScene \| null` | Derived: the active scene object |
-| `display` | `DisplayContent \| null` | Derived: rendered scene with choices for the UI |
-| `qualityList` | `Array` | Derived: all qualities with current values |
-| `lastCheck` | `CheckResult \| null` | Result of the most recent difficulty check |
+Plain interfaces mirroring `dendrynexus compile` output (`GameScene`, `QualityDefinition`, `CompiledGame`) plus the engine's own runtime shapes (`GameState`, `DisplayContent`, `DisplayChoice`, `HandCard`, `CheckResult`). No logic, just contracts.
 
-### Arena Utilities
+### `arena.ts`
 
-```typescript
-import { getZone, getAdjacent, areAdjacent, ZONES } from 'riffle';
+Standalone module (no dependency on the engine or on DendryNexus data) defining the flyting contest's play area: three concentric rings, each subdivided into zones with an adjacency graph.
 
-getZone('m3');              // Get a zone by ID
-getAdjacent('i1');          // Get all zones adjacent to a zone
-areAdjacent('i1', 'm2');   // Check if two zones share an edge
+```ts
+getZone('middle', 3);           // → the Zone for "m3"
+getAdjacent('i2');              // → Zone[] sharing an edge with the centre ground
+areAdjacent('m1', 'o1');        // → true
+ZONES['i1'].label;              // → "Player's End"
 ```
 
-### Difficulty Labels
+Zone IDs are ring-prefixed and unambiguous: `i1` to `i3` (inner: player, centre, opponent), `m1` to `m6` (middle: crowd sectors), `o1` to `o4` (outer: distant quarters). The adjacency lists and the degree-mapping between rings are documented in the comments at the top of the file; read those before changing any `adjacent` array, since they encode the geometry, not an arbitrary graph.
 
-| Probability | Label |
-|---|---|
-| ≤ 10% | almost impossible |
-| ≤ 30% | high-risk |
-| ≤ 40% | tough |
-| ≤ 50% | very chancy |
-| ≤ 60% | chancy |
-| ≤ 70% | modest |
-| ≤ 80% | very modest |
-| ≤ 90% | low risk |
-| > 90% | straightforward |
+## Key Files
 
-## Requirements
-
-- **Svelte 5** — Uses runes (`$state`, `$derived`) for reactivity
-- **DendryNexus** — Expects compiled `game.json` from `dendrynexus compile`
+- `engine.svelte.ts`: `RiffleEngine`, the reactive game-state class. Start here for anything touching scene navigation, choices, checks or cards.
+- `types.ts`: data shape reference for both compiled game data and runtime state.
+- `arena.ts`: zone topology for the contest arena, independent of the story engine.
+- `index.ts`: barrel export; add new public exports here, not by reaching into individual files.
