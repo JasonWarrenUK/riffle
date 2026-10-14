@@ -2,7 +2,7 @@
 
 A Svelte 5 reactive game engine for interactive fiction compiled from [DendryNexus](https://github.com/aucchen/dendrynexus) story files. Riffle wraps compiled game JSON in a fully reactive runtime: branching narrative, player choices, difficulty checks, card/deck mechanics and quality systems.
 
-This directory is the canonical source. It is mirrored one way to [`JasonWarrenUK/riffle`](https://github.com/JasonWarrenUK/riffle) by Flyt's `sync-engine.yml` workflow on every push to `main` that touches it, so edit the README here rather than on the mirror.
+Published to npm as `@jasonwarrenuk/riffle`. [Flyt](https://github.com/JasonWarrenUK/flyt), the game it was extracted from, is its first consumer. Until Flyt switches to importing the package (roadmap task 10IC.2), the engine code in Flyt's `src/engine/` and this repository's `src/lib/` are the same files.
 
 ## Features
 
@@ -17,17 +17,24 @@ This directory is the canonical source. It is mirrored one way to [`JasonWarrenU
 ## Structure
 
 ```
-index.ts              Barrel export; add new public exports here, not by reaching into individual files
-engine.svelte.ts      RiffleEngine, the reactive game-state class
-types.ts              TypeScript contracts for compiled game data and runtime state
+src/lib/index.ts              Barrel export; add new public exports here, not by reaching into individual files
+src/lib/engine.svelte.ts      RiffleEngine, the reactive game-state class
+src/lib/types.ts              TypeScript contracts for compiled game data and runtime state
+src/lib/engine.test.ts        Smoke tests for loading, navigation and restart
 ```
+
+`npm run build` compiles `src/lib` into `dist/` with `svelte-package`; `npm test` runs the tests.
 
 ## Usage
 
-Within Flyt the directory is aliased as `$engine`. Riffle is not yet published as a package, so a standalone consumer imports from the directory path.
+Install the package. It ships compiled Svelte modules and needs Svelte 5 as a peer dependency, so use it from a Vite-based Svelte or SvelteKit project.
+
+```sh
+npm install @jasonwarrenuk/riffle svelte
+```
 
 ```ts
-import { RiffleEngine } from '$engine';
+import { RiffleEngine } from '@jasonwarrenuk/riffle';
 
 const engine = new RiffleEngine();
 await engine.load('/great-hall.json');
