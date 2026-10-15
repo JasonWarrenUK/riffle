@@ -1,6 +1,6 @@
 {
 	"name": "@jasonwarrenuk/riffle",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Svelte 5 reactive wrapper that turns compiled DendryNexus game data into live game state",
 	"type": "module",
 	"license": "MIT",
@@ -27,6 +27,7 @@
 	},
 	"files": [
 		"dist",
+		"CHANGELOG.md",
 		"!dist/**/*.test.*"
 	],
 	"scripts": {

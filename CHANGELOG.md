@@ -5,6 +5,13 @@ All notable changes to this project are recorded here. The format follows [Keep 
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-15
+
+### Changed
+
+- Declares the public API stable: from here, breaking changes bump the major version. The exports are the same as 0.1.0.
+- `CHANGELOG.md` now ships in the npm package, so release history is available from the installed package.
+
 ## [0.1.0] - 2026-10-15
 
 ### Added
@@ -19,5 +26,6 @@ All notable changes to this project are recorded here. The format follows [Keep 
 
 - Engine source moved to `src/lib/`; the engine code itself is unchanged.
 
-[Unreleased]: https://github.com/JasonWarrenUK/riffle/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/JasonWarrenUK/riffle/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/JasonWarrenUK/riffle/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/JasonWarrenUK/riffle/releases/tag/v0.1.0
