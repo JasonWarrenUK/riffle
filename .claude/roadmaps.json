@@ -1,0 +1,97 @@
+[
+	{
+		"name": "PHASE_1",
+		"path": "docs/roadmaps/PHASE_1.md",
+		"project": "Riffle",
+		"archived": false,
+		"externalGates": [],
+		"milestones": [
+			{
+				"id": "M1",
+				"name": "Compiler and zone-graph release",
+				"goal": "Ship the Dendry compiler from Riffle and settle the zone-graph helpers that 1.1.0 released",
+				"tasks": [
+					{
+						"id": "1EX.1",
+						"description": "Fix the getZone linear scan so lookups stop walking the whole zone map on every call",
+						"status": "todo",
+						"dependsOn": [],
+						"notes": "Issue riffle#5. The code landed with riffle#4 (merged 2026-10-15, released as 1.1.0), so nothing blocks this",
+						"assignee": "Jason"
+					},
+					{
+						"id": "1CC.1",
+						"description": "Port compile-dendry.js from Flyt as a parameterised CLI with its tests: the title fallback, the input and output roots and the one-subgame-per-subdirectory convention become parameters",
+						"status": "todo",
+						"dependsOn": [],
+						"notes": "Was Flyt 10IC.5. Flyt's docs/adr/0002-compiler-home.md (Flyt PR #30) is the brief. Acceptance includes the engine vocabulary guard covering the compiler, so the CLI must live under the guard's path filter (currently src/lib/) or the filter must widen with it",
+						"assignee": "Jason"
+					},
+					{
+						"id": "1CC.2",
+						"description": "Expose the compiler CLI behind its own Node-only export path so browser bundles never see fs imports",
+						"status": "blocked",
+						"dependsOn": ["1CC.1"],
+						"notes": "Review note carried from Flyt PR #30",
+						"assignee": "Jason"
+					},
+					{
+						"id": "1CC.3",
+						"description": "Write the .dry format reference doc, moved from Flyt's docs/dendrynexus-reference.md",
+						"status": "todo",
+						"dependsOn": [],
+						"notes": "Describes the compiler's input format, so it moves with the compiler. Also resolves the doc-comment references Flyt 8EX.5 removed for want of a Riffle equivalent",
+						"assignee": "Jason"
+					},
+					{
+						"id": "1CC.4",
+						"description": "Publish the compiler CLI release",
+						"status": "blocked",
+						"dependsOn": ["1CC.2", "1CC.3"],
+						"notes": "Flyt then bumps the dependency, switches its compile:dendry script to the CLI and retires scripts/compile-dendry.js (Flyt-side tasks)",
+						"assignee": "Jason"
+					},
+					{
+						"id": "1AD.1",
+						"description": "Copy ADR 0001 (the Riffle boundary rule) and ADR 0002 (the compiler's home) from Flyt's docs/adr/ into Riffle's docs/adr/",
+						"status": "todo",
+						"dependsOn": [],
+						"notes": "Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here",
+						"assignee": "Jason"
+					}
+				]
+			},
+			{
+				"id": "M2",
+				"name": "Phrase engine",
+				"goal": "Build the Riffle halves of the phrase engine once Flyt's design draws the engine/game line",
+				"tasks": [
+					{
+						"id": "2PH.1",
+						"description": "Chained slot composition, Riffle half",
+						"status": "todo",
+						"dependsOn": [],
+						"notes": "Placeholder. Flyt's ADR 0001 places chained, non-reversible slot composition (Flyt 2PE.1 and 2PE.2) in Riffle. Flyt's 2PE.1 (design the phrase-chain data model) draws the engine/Flyt line and is itself blocked by Flyt 1ES.1 (entity state schema): an external dependency, recorded here rather than wired. Flyt's 2PE.x IDs name different tasks from these",
+						"assignee": "Jason"
+					},
+					{
+						"id": "2PH.2",
+						"description": "Chained slot composition, second half",
+						"status": "blocked",
+						"dependsOn": ["2PH.1"],
+						"notes": "Placeholder; scope settles when 2PH.1 lands",
+						"assignee": "Jason"
+					},
+					{
+						"id": "2PH.3",
+						"description": "Unlock-condition evaluation, Riffle half: the engine evaluates, Flyt authors",
+						"status": "blocked",
+						"dependsOn": ["2PH.1"],
+						"notes": "Placeholder. Flyt's ADR 0001 splits unlock-condition resolution (Flyt 2PE.3) across both repos",
+						"assignee": "Jason"
+					}
+				]
+			}
+		]
+	}
+]
