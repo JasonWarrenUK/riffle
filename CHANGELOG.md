@@ -5,6 +5,10 @@ All notable changes to this project are recorded here. The format follows [Keep 
 
 ## [Unreleased]
 
+### Added
+
+- `zone-graph`: generic ring-based arena mechanism (`Zone`, `ZoneMap`, `buildZoneMap`, `getZone`, `getAdjacent`, `areAdjacent`), promoted from Flyt once its helpers stopped reading the contest's own zones. `buildZoneMap` throws on a duplicate zone ID rather than letting the last one win.
+
 ## [1.0.0] - 2026-10-15
 
 ### Changed

@@ -92,6 +92,24 @@ Plain interfaces for compiled game data (`GameScene`, `SceneOption`, `Conditiona
 
 Broad checks: `success = scaler * (stat / difficulty)`, default scaler 0.6. Narrow checks: `success = 0.5 + (stat - difficulty) * increment`, default increment 0.1. A scaler or increment above 1 is treated as a percentage.
 
+### Zone graph (`zone-graph.ts`)
+
+Mechanism for any ring-based arena: a `Zone` has an ID, a ring name, an index within that ring, a label and an adjacency list. Ring names are a type parameter, so a game supplies its own. Build a `ZoneMap` from zone lists and query it:
+
+```ts
+import { buildZoneMap, getZone, getAdjacent, areAdjacent } from '@jasonwarrenuk/riffle';
+import type { Zone, ZoneMap } from '@jasonwarrenuk/riffle';
+
+type Ring = 'inner' | 'outer';
+const zones: ZoneMap<Ring> = buildZoneMap<Ring>(innerZones, outerZones);
+
+getZone(zones, 'outer', 2);     // the second outer zone, or undefined
+getAdjacent(zones, 'o2');       // Zone[] sharing an edge with o2
+areAdjacent(zones, 'i1', 'o2'); // true if i1 lists o2 as adjacent
+```
+
+`buildZoneMap` throws on a duplicate zone ID. Adjacency is read from the first zone's list only; keep lists symmetric when both directions matter.
+
 ## Requirements
 
 - **Svelte 5**: uses runes (`$state`, `$derived`) for reactivity
