@@ -58,6 +58,14 @@
 						"dependsOn": [],
 						"notes": "Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here. Copy the updated ADR 0002 (it records the runtime-neutral requirement), found on Flyt PR #30's branch docs/adr-compiler-home, not the earlier text",
 						"assignee": "Jason"
+					},
+					{
+						"id": "1DC.1",
+						"description": "Document reset() in the README, and decide whether evaluateCondition is public API (a README row) or internal (marked so in the types)",
+						"status": "todo",
+						"dependsOn": [],
+						"notes": "From Flyt, found while fixing a review comment on Flyt PR #29: Flyt's CLAUDE.md now defers to this README for the engine API. reset() clears the loaded game and state and returns loading and error to their defaults (Flyt calls it when the player returns to the menu); restart() returns to the first scene of the same game, and is the only one the README mentions. The 1.1.0 type declarations also expose evaluateCondition(condition?: string): boolean (src/lib/engine.svelte.ts:797), which the README omits. Changelog entry goes under Unreleased; ship as a 1.1.x patch or fold into the next release",
+						"assignee": "Jason"
 					}
 				]
 			},

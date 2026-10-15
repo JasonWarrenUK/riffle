@@ -1,6 +1,6 @@
 # Riffle PHASE_1: Roadmap Overview
 
-**9 tasks across 2 milestones.** Files: `.claude/roadmaps.json` (machine-readable), `docs/roadmaps/PHASE_1.md` (full task list with Mermaid dependency diagram).
+**10 tasks across 2 milestones.** Files: `.claude/roadmaps.json` (machine-readable), `docs/roadmaps/PHASE_1.md` (full task list with Mermaid dependency diagram).
 
 > This roadmap starts where Flyt's milestones M8 to M10 ended. The twelve extraction tasks they held (audit, moving arena.ts, README reconciliation, the vocabulary guard, removing auto-sync, publishing 1.0.0 and switching Flyt to the package) are done and stay in Flyt's history. Only open work came across.
 
@@ -8,7 +8,7 @@
 
 ## What we're building
 
-Riffle is published (`@jasonwarrenuk/riffle` 1.1.0) and Flyt imports it. Two pieces of engine-shaped code still live only in Flyt: the Dendry compiler (`scripts/compile-dendry.js`) and the `.dry` reference doc that describes its input. Flyt's ADR 0002 decided the compiler belongs in Riffle as a CLI, with its three Flyt-specific parts (the title fallback, the `story/` and `static/` roots, the one-subgame-per-subdirectory convention) turned into parameters. Milestone 1 does that move and publishes it. The CLI must run identically under Node, Bun and Deno (Flyt found Bun lists directories in a different order, which changed the order of scenes in the compiled output), so the port sorts every directory listing and uses only `node:`-prefixed built-ins. It also sits behind its own export path so browser bundles never import file system code. The milestone adds two housekeeping tasks: the `getZone` linear scan (issue #5) and copying ADRs 0001 and 0002 into this repo so the rule that guards it lives here.
+Riffle is published (`@jasonwarrenuk/riffle` 1.1.0) and Flyt imports it. Two pieces of engine-shaped code still live only in Flyt: the Dendry compiler (`scripts/compile-dendry.js`) and the `.dry` reference doc that describes its input. Flyt's ADR 0002 decided the compiler belongs in Riffle as a CLI, with its three Flyt-specific parts (the title fallback, the `story/` and `static/` roots, the one-subgame-per-subdirectory convention) turned into parameters. Milestone 1 does that move and publishes it. The CLI must run identically under Node, Bun and Deno (Flyt found Bun lists directories in a different order, which changed the order of scenes in the compiled output), so the port sorts every directory listing and uses only `node:`-prefixed built-ins. It also sits behind its own export path so browser bundles never import file system code. The milestone adds three housekeeping tasks: the `getZone` linear scan (issue #5), copying ADRs 0001 and 0002 into this repo so the rule that guards it lives here, and documenting `reset()` in the README now that Flyt's own docs defer to it for the engine API.
 
 Milestone 2 holds the Riffle halves of the phrase engine. ADR 0001 places chained slot composition in Riffle and splits unlock-condition evaluation across both repos (the engine evaluates, Flyt authors). The three tasks are placeholders: Flyt's own 2PE.1 (the phrase-chain data model) decides where the line falls, and that task is blocked in Flyt behind the entity state schema (1ES.1).
 

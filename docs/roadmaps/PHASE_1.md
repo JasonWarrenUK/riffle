@@ -22,6 +22,8 @@ Riffle's first roadmap of its own. The extraction from Flyt is finished (engine 
   - Note: Flyt then bumps the dependency, switches its compile:dendry script to the CLI and retires scripts/compile-dendry.js (Flyt-side tasks)
 - [ ] **1AD.1**: Copy ADR 0001 (the Riffle boundary rule) and ADR 0002 (the compiler's home) from Flyt's docs/adr/ into Riffle's docs/adr/
   - Note: Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here. Copy the updated ADR 0002 (it records the runtime-neutral requirement), found on Flyt PR #30's branch docs/adr-compiler-home, not the earlier text
+- [ ] **1DC.1**: Document reset() in the README, and decide whether evaluateCondition is public API (a README row) or internal (marked so in the types)
+  - Note: From Flyt, found while fixing a review comment on Flyt PR #29: Flyt's CLAUDE.md now defers to this README for the engine API. reset() clears the loaded game and state and returns loading and error to their defaults (Flyt calls it when the player returns to the menu); restart() returns to the first scene of the same game, and is the only one the README mentions. The 1.1.0 type declarations also expose evaluateCondition(condition?: string): boolean (src/lib/engine.svelte.ts:797), which the README omits. Changelog entry goes under Unreleased; ship as a 1.1.x patch or fold into the next release
 
 ---
 
@@ -57,6 +59,7 @@ graph LR
 	1CC.3["1CC.3: Write the .dry format reference doc, mov…"]
 	1CC.4["1CC.4: Publish the compiler CLI release"]
 	1AD.1["1AD.1: Copy ADR 0001 (the Riffle boundary rule)…"]
+	1DC.1["1DC.1: Document reset() in the README, and deci…"]
 	M1["M1: Compiler and zone-graph release"]:::mile
 	2PH.1["2PH.1: Chained slot composition, Riffle half"]
 	2PH.2["2PH.2: Chained slot composition, second half"]
@@ -68,10 +71,11 @@ graph LR
 	1CC.3 --> 1CC.4
 	1CC.4 --> M1
 	1AD.1 --> M1
+	1DC.1 --> M1
 	2PH.1 --> 2PH.2
 	2PH.1 --> 2PH.3
 	2PH.2 --> M2
 	2PH.3 --> M2
-	class 1AD.1,1CC.1,1CC.3,1EX.1,2PH.1 todo
+	class 1AD.1,1CC.1,1CC.3,1DC.1,1EX.1,2PH.1 todo
 	class 1CC.2,1CC.4,2PH.2,2PH.3 blocked
 ```
