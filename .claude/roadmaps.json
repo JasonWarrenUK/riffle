@@ -21,26 +21,26 @@
 					},
 					{
 						"id": "1CC.1",
-						"description": "Port compile-dendry.js from Flyt as a parameterised CLI with its tests: the title fallback, the input and output roots and the one-subgame-per-subdirectory convention become parameters",
+						"description": "Port compile-dendry.js from Flyt as a runtime-neutral parameterised CLI with its tests: the title fallback, the input and output roots and the one-subgame-per-subdirectory convention become parameters, and the output is byte-identical under Node, Bun and Deno",
 						"status": "todo",
 						"dependsOn": [],
-						"notes": "Was Flyt 10IC.5. Flyt's docs/adr/0002-compiler-home.md (Flyt PR #30) is the brief. Acceptance includes the engine vocabulary guard covering the compiler, so the CLI must live under the guard's path filter (currently src/lib/) or the filter must widen with it",
+						"notes": "Was Flyt 10IC.5. Flyt's ADR 0002 (Flyt PR #30, branch docs/adr-compiler-home) is the brief and records the evidence. Runtime-neutral means: import built-ins with the node: prefix (node:fs, node:path), sort every directory listing before use, use no API only one runtime has and pin no behaviour to a runtime. Flyt measured the existing script (imports only fs and path) unchanged under Node 25.2.1, Bun 1.3.5 and Deno 2.9.7: all exit cleanly, but Bun lists directories in a different order from Node and the compiler inserts scenes in read order, so great-hall.json has the same 94 scenes in a different order under Bun. Acceptance: a fixture story compiled under all three runtimes with the outputs compared; if CI cannot install all three, record which it covers and which is checked by hand. Acceptance also includes the engine vocabulary guard covering the compiler, so the CLI must live under the guard's path filter (currently src/lib/) or the filter must widen with it",
 						"assignee": "Jason"
 					},
 					{
 						"id": "1CC.2",
-						"description": "Expose the compiler CLI behind its own Node-only export path so browser bundles never see fs imports",
+						"description": "Keep the compiler CLI behind its own export path so browser bundles never import file system code",
 						"status": "blocked",
 						"dependsOn": ["1CC.1"],
-						"notes": "Review note carried from Flyt PR #30",
+						"notes": "Review note carried from Flyt PR #30. The constraint is file system code out of the browser bundle; the CLI itself stays runtime-neutral (1CC.1)",
 						"assignee": "Jason"
 					},
 					{
 						"id": "1CC.3",
-						"description": "Write the .dry format reference doc, moved from Flyt's docs/dendrynexus-reference.md",
+						"description": "Write the .dry format reference doc, moved from Flyt's docs/dendrynexus-reference.md, and document how to run the compiler CLI under Node, Bun and Deno",
 						"status": "todo",
 						"dependsOn": [],
-						"notes": "Describes the compiler's input format, so it moves with the compiler. Also resolves the doc-comment references Flyt 8EX.5 removed for want of a Riffle equivalent",
+						"notes": "Describes the compiler's input format, so it moves with the compiler. Also resolves the doc-comment references Flyt 8EX.5 removed for want of a Riffle equivalent. The package bin entry carries the usual node shebang because npm expects it; Bun users run it with bunx --bun and Deno users with deno run --allow-read --allow-write (commands as Flyt ran them; re-check against the shipped CLI before documenting)",
 						"assignee": "Jason"
 					},
 					{
@@ -56,7 +56,7 @@
 						"description": "Copy ADR 0001 (the Riffle boundary rule) and ADR 0002 (the compiler's home) from Flyt's docs/adr/ into Riffle's docs/adr/",
 						"status": "todo",
 						"dependsOn": [],
-						"notes": "Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here",
+						"notes": "Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here. Copy the updated ADR 0002 (it records the runtime-neutral requirement), found on Flyt PR #30's branch docs/adr-compiler-home, not the earlier text",
 						"assignee": "Jason"
 					}
 				]
