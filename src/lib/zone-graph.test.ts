@@ -19,6 +19,15 @@ describe('buildZoneMap', () => {
 		const again: Zone<TestRing> = { ...north, label: 'Other North' };
 		expect(() => buildZoneMap([hub, north], [again])).toThrow('Duplicate zone ID "north"');
 	});
+
+	it('treats IDs that match Object.prototype members as ordinary zones', () => {
+		const ctor: Zone<TestRing> = { id: 'constructor', ring: 'hub', index: 1, label: 'Ctor', adjacent: ['toString'] };
+		const map = buildZoneMap([ctor]);
+		expect(Object.keys(map)).toEqual(['constructor']);
+		expect(getAdjacent(map, 'constructor')).toEqual([]);
+		expect(getAdjacent(map, 'toString')).toEqual([]);
+		expect(areAdjacent(map, 'toString', 'constructor')).toBe(false);
+	});
 });
 
 describe('getZone', () => {

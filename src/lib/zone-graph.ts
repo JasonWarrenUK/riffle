@@ -33,7 +33,8 @@ export type ZoneMap<R extends string = string> = Record<string, Zone<R>>;
  *   later as a confusing adjacency bug rather than at build time
  */
 export function buildZoneMap<R extends string>(...groups: Zone<R>[][]): ZoneMap<R> {
-	const zones: ZoneMap<R> = {};
+	// no prototype, so IDs such as "constructor" or "toString" are ordinary keys
+	const zones: ZoneMap<R> = Object.create(null);
 	for (const zone of groups.flat()) {
 		if (zone.id in zones) throw new Error(`Duplicate zone ID "${zone.id}"`);
 		zones[zone.id] = zone;
