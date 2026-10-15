@@ -24,7 +24,7 @@
 						"description": "Port compile-dendry.js from Flyt as a runtime-neutral parameterised CLI with its tests: the title fallback, the input and output roots and the one-subgame-per-subdirectory convention become parameters, and the output is byte-identical under Node, Bun and Deno",
 						"status": "todo",
 						"dependsOn": [],
-						"notes": "Was Flyt 10IC.5. Flyt's ADR 0002 (Flyt PR #30, branch docs/adr-compiler-home) is the brief and records the evidence. Runtime-neutral means: import built-ins with the node: prefix (node:fs, node:path), sort every directory listing before use, use no API only one runtime has and pin no behaviour to a runtime. Flyt measured the existing script (imports only fs and path) unchanged under Node 25.2.1, Bun 1.3.5 and Deno 2.9.7: all exit cleanly, but Bun lists directories in a different order from Node and the compiler inserts scenes in read order, so great-hall.json has the same 94 scenes in a different order under Bun. Acceptance: a fixture story compiled under all three runtimes with the outputs compared; if CI cannot install all three, record which it covers and which is checked by hand. Acceptance also includes the engine vocabulary guard covering the compiler, so the CLI must live under the guard's path filter (currently src/lib/) or the filter must widen with it",
+						"notes": "Was Flyt 10IC.5. Flyt's ADR 0002 (docs/adr/0002-compiler-home.md on Flyt's main) is the brief and records the evidence. Runtime-neutral means: import built-ins with the node: prefix (node:fs, node:path), sort every directory listing before use, use no API only one runtime has and pin no behaviour to a runtime. Flyt measured the existing script (imports only fs and path) unchanged under Node 25.2.1, Bun 1.3.5 and Deno 2.9.7: all exit cleanly, but Bun lists directories in a different order from Node and the compiler inserts scenes in read order, so great-hall.json has the same 94 scenes in a different order under Bun. Acceptance: a fixture story compiled under all three runtimes with the outputs compared; if CI cannot install all three, record which it covers and which is checked by hand. Acceptance also includes the engine vocabulary guard covering the compiler, so the CLI must live under the guard's path filter (currently src/lib/) or the filter must widen with it",
 						"assignee": "Jason"
 					},
 					{
@@ -56,7 +56,7 @@
 						"description": "Copy ADR 0001 (the Riffle boundary rule) and ADR 0002 (the compiler's home) from Flyt's docs/adr/ into Riffle's docs/adr/",
 						"status": "todo",
 						"dependsOn": [],
-						"notes": "Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here. Copy the updated ADR 0002 (it records the runtime-neutral requirement), found on Flyt PR #30's branch docs/adr-compiler-home, not the earlier text",
+						"notes": "Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here. Copy both from Flyt's main (merged at b0de64d, tagged v0.3.0): docs/adr/0001-riffle-boundary.md and docs/adr/0002-compiler-home.md, the latter including the runtime-neutral requirement",
 						"assignee": "Jason"
 					},
 					{
