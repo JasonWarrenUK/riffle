@@ -124,4 +124,10 @@ describe('formatReport', () => {
 		expect(report).toContain('src/lib/x.ts:7: crowd');
 		expect(report).toContain(ALLOW_MARKER);
 	});
+
+	it('agrees the verb with the number of hits', () => {
+		const hit = { file: 'src/lib/x.ts', line: 7, text: 'crowd', matches: ['crowd'] };
+		expect(formatReport([hit])).toContain('1 line under src/lib/ carries flyting vocabulary');
+		expect(formatReport([hit, { ...hit, line: 8 }])).toContain('2 lines under src/lib/ carry flyting vocabulary');
+	});
 });

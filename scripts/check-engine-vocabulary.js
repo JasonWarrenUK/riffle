@@ -161,7 +161,8 @@ export function formatReport(hits) {
 	if (hits.length === 0) return 'engine vocabulary: clean';
 	const lines = hits.map(h => `${h.file}:${h.line}: ${h.matches.join(', ')}\n    ${h.text.trim()}`);
 	const noun = hits.length === 1 ? 'line' : 'lines';
-	return `engine vocabulary: ${hits.length} ${noun} under ${GUARDED_PREFIX} carry flyting vocabulary\n${lines.join('\n')}\n\nsrc/lib/ is the Riffle engine's source and must stay game-agnostic. Move the content to Flyt, or mark a reviewed line with ${ALLOW_MARKER}.`;
+	const verb = hits.length === 1 ? 'carries' : 'carry';
+	return `engine vocabulary: ${hits.length} ${noun} under ${GUARDED_PREFIX} ${verb} flyting vocabulary\n${lines.join('\n')}\n\nsrc/lib/ is the Riffle engine's source and must stay game-agnostic. Move the content to Flyt, or mark a reviewed line with ${ALLOW_MARKER}.`;
 }
 
 function main(argv) {
