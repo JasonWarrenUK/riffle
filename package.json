@@ -3,6 +3,8 @@
 	"version": "0.1.0",
 	"description": "Svelte 5 reactive wrapper that turns compiled DendryNexus game data into live game state",
 	"type": "module",
+	"license": "MIT",
+	"author": "Jason Warren",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/JasonWarrenUK/riffle.git"
