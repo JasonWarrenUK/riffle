@@ -1,0 +1,88 @@
+# Riffle PHASE_1 Roadmap
+
+Riffle's first roadmap of its own. The extraction from Flyt is finished (engine code moved, auto-sync removed, 1.0.0 and 1.1.0 published), so this phase carries what is left: the Dendry compiler moving into the package as a CLI, and the Riffle halves of the phrase engine once Flyt's design draws the line.
+
+**Critical path:** `1CC.1 → 1CC.2 → 1CC.4`; the compiler port gates the browser-safe export path, and both gate the release Flyt switches its build script to.
+
+---
+
+## Milestone 1: Compiler and zone-graph release
+
+**Goal:** Ship the Dendry compiler from Riffle and settle the zone-graph helpers that 1.1.0 released
+
+- [ ] **1EX.1**: Fix the getZone linear scan so lookups stop walking the whole zone map on every call
+  - Note: Issue riffle#5. The code landed with riffle#4 (merged 2026-10-15, released as 1.1.0), so nothing blocks this
+- [ ] **1CC.1**: Port compile-dendry.js from Flyt as a runtime-neutral parameterised CLI with its tests: the title fallback, the input and output roots and the one-subgame-per-subdirectory convention become parameters, and the output is byte-identical under Node, Bun and Deno
+  - Note: Was Flyt 10IC.5. Flyt's ADR 0002 (docs/adr/0002-compiler-home.md on Flyt's main) is the brief and records the evidence. Runtime-neutral means: import built-ins with the node: prefix (node:fs, node:path), sort every directory listing before use, use no API only one runtime has and pin no behaviour to a runtime. Flyt measured the existing script (imports only fs and path) unchanged under Node 25.2.1, Bun 1.3.5 and Deno 2.9.7: all exit cleanly, but Bun lists directories in a different order from Node and the compiler inserts scenes in read order, so great-hall.json has the same 94 scenes in a different order under Bun. Acceptance: a fixture story compiled under all three runtimes with the outputs compared; if CI cannot install all three, record which it covers and which is checked by hand. The CLI lives in src/cli/, outside src/lib. Acceptance includes the engine vocabulary guard covering it, which means widening all three src/lib spots in .github/workflows/engine-vocabulary.yml: the pull_request.paths trigger (line 12), the push.paths trigger (line 17) and the git diff pathspec in the run step (line 48). Widening only the triggers would run the job on a CLI change but still diff src/lib alone, so it would report clean. Packaging the CLI (its own build step and package.json export) is 1CC.2, not this task
+- [ ] **1CC.2**: Package the compiler CLI through its own build step and export path, with a test that the built browser entry pulls in no node: import _(blocked: depends on 1CC.1)_
+  - Note: Review note carried from Flyt PR #30. The constraint is file system code out of the browser bundle; the CLI itself stays runtime-neutral (1CC.1). The CLI sits in src/cli/ (1CC.1), outside the src/lib tree that svelte-package builds for the browser entry, because npm run build is svelte-package -i src/lib -o dist and does not package it. This task adds the build step and the package.json export that do, and owns the proof: a test that the built browser entry contains no node: import
+- [ ] **1CC.3**: Write the .dry format reference doc, moved from Flyt's docs/dendrynexus-reference.md
+  - Note: Describes the compiler's input format, so it moves with the compiler. Also resolves the doc-comment references Flyt 8EX.5 removed for want of a Riffle equivalent. How to run the CLI is 1CC.5, which needs the CLI to exist
+- [ ] **1CC.5**: Document how to run the compiler CLI under Node, Bun and Deno _(blocked: depends on 1CC.1)_
+  - Note: Split from 1CC.3 because these commands cannot be checked until the CLI ships. The package bin entry carries the usual node shebang because npm expects it; Bun users run it with bunx --bun (the flag is listed by bunx --help on Bun 1.3.5) and Deno users with deno run --allow-read --allow-write (Flyt's invocation, unverified here; Deno is low priority). Re-check every command against the shipped CLI before documenting it
+- [ ] **1CC.4**: Publish the compiler CLI release _(blocked: depends on 1CC.2, 1CC.3, 1CC.5)_
+  - Note: Flyt then bumps the dependency, switches its compile:dendry script to the CLI and retires scripts/compile-dendry.js (Flyt-side tasks)
+- [ ] **1AD.1**: Copy ADR 0001 (the Riffle boundary rule) and ADR 0002 (the compiler's home) from Flyt's docs/adr/ into Riffle's docs/adr/
+  - Note: Both govern this repo but live only in Flyt. Flyt keeps ADR 0001 as the decision record of origin with a pointer here. Copy both from Flyt's main (merged at b0de64d, tagged v0.3.0): docs/adr/0001-riffle-boundary.md and docs/adr/0002-compiler-home.md, the latter including the runtime-neutral requirement
+- [ ] **1DC.1**: Document reset() in the README, and decide whether evaluateCondition is public API (a README row) or internal (marked so in the types)
+  - Note: From Flyt, found while fixing a review comment on Flyt PR #29: Flyt's CLAUDE.md now defers to this README for the engine API. reset() clears the loaded game and state and returns loading and error to their defaults (Flyt calls it when the player returns to the menu); restart() returns to the first scene of the same game, and is the only one the README mentions. The 1.1.0 type declarations also expose evaluateCondition(condition?: string): boolean (src/lib/engine.svelte.ts:797), which the README omits. Changelog entry goes under Unreleased; ship as a 1.1.x patch or fold into the next release
+
+---
+
+## Milestone 2: Phrase engine
+
+**Goal:** Build the Riffle halves of the phrase engine once Flyt's design draws the engine/game line
+
+- [ ] **2PH.1**: Chained slot composition, Riffle half _(blocked: depends on GFLYTPHRASE)_
+  - Note: Placeholder. Flyt's ADR 0001 places chained, non-reversible slot composition (Flyt 2PE.1 and 2PE.2) in Riffle. Flyt's 2PE.1 (design the phrase-chain data model) draws the engine/Flyt line and is itself blocked by Flyt 1ES.1 (entity state schema): the gate names that outside condition without depending on a Flyt task ID. Flyt's 2PE.x IDs name different tasks from these
+- [ ] **2PH.2**: Chained slot composition, second half _(blocked: depends on 2PH.1)_
+  - Note: Placeholder; scope settles when 2PH.1 lands
+- [ ] **2PH.3**: Unlock-condition evaluation, Riffle half: the engine evaluates, Flyt authors _(blocked: depends on 2PH.1)_
+  - Note: Placeholder. Flyt's ADR 0001 splits unlock-condition resolution (Flyt 2PE.3) across both repos
+
+---
+
+## Dependency Diagram
+
+```mermaid
+graph LR
+	classDef todo fill:#f6f6f6,stroke:#6f6f6f,color:#6f6f6f
+	classDef inProgress fill:#e8f2ff,stroke:#0071af,color:#0071af
+	classDef blocked fill:#fff8f6,stroke:#e0002b,color:#e0002b,stroke-width:2px
+	classDef paused fill:#fdf4ff,stroke:#b01fe3,color:#b01fe3,stroke-dasharray:4 3
+	classDef deferred fill:#fff8f3,stroke:#ac5c00,color:#ac5c00,stroke-dasharray:2 4,font-style:italic
+	classDef done fill:#e0ffd9,stroke:#008217,color:#008217
+	classDef outOfScope fill:#f6f6f6,stroke:#717171,color:#717171,stroke-dasharray:2 2
+	classDef mile fill:#e3f7ff,stroke:#007590,color:#007590,font-weight:bold
+	classDef external fill:#fff9e5,stroke:#7d6f00,color:#7d6f00,stroke-dasharray:4 3,font-style:italic
+	GFLYTPHRASE["GFLYTPHRASE: Flyt's phrase-chain design draws t…"]:::external
+	1EX.1["1EX.1: Fix the getZone linear scan so lookups s…"]
+	1CC.1["1CC.1: Port compile-dendry.js from Flyt as a ru…"]
+	1CC.2["1CC.2: Package the compiler CLI through its own…"]
+	1CC.3["1CC.3: Write the .dry format reference doc, mov…"]
+	1CC.5["1CC.5: Document how to run the compiler CLI und…"]
+	1CC.4["1CC.4: Publish the compiler CLI release"]
+	1AD.1["1AD.1: Copy ADR 0001 (the Riffle boundary rule)…"]
+	1DC.1["1DC.1: Document reset() in the README, and deci…"]
+	M1["M1: Compiler and zone-graph release"]:::mile
+	2PH.1["2PH.1: Chained slot composition, Riffle half"]
+	2PH.2["2PH.2: Chained slot composition, second half"]
+	2PH.3["2PH.3: Unlock-condition evaluation, Riffle half…"]
+	M2["M2: Phrase engine"]:::mile
+	GFLYTPHRASE --> 2PH.1
+	1EX.1 --> M1
+	1CC.1 --> 1CC.2
+	1CC.1 --> 1CC.5
+	1CC.2 --> 1CC.4
+	1CC.3 --> 1CC.4
+	1CC.5 --> 1CC.4
+	1CC.4 --> M1
+	1AD.1 --> M1
+	1DC.1 --> M1
+	2PH.1 --> 2PH.2
+	2PH.1 --> 2PH.3
+	2PH.2 --> M2
+	2PH.3 --> M2
+	class 1AD.1,1CC.1,1CC.3,1DC.1,1EX.1 todo
+	class 1CC.2,1CC.4,1CC.5,2PH.1,2PH.2,2PH.3 blocked
+```
