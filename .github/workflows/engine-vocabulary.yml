@@ -2,10 +2,17 @@ name: Engine Vocabulary Guard
 
 # src/lib/ is the Riffle engine's source and must stay game-agnostic. This fails a
 # PR whose added engine lines carry flyting vocabulary or contest zone labels.
+# A direct push to main is checked too; that run reports after the fact, since
+# the commit has already landed.
 # Rule and word list: scripts/check-engine-vocabulary.js
 
 on:
   pull_request:
+    paths:
+      - 'src/lib/**'
+  push:
+    branches:
+      - main
     paths:
       - 'src/lib/**'
 
@@ -24,7 +31,18 @@ jobs:
           node-version: 22
 
       - name: Check added engine lines for flyting vocabulary
+        # explicit bash adds pipefail, so a failed git diff cannot pass as an empty, clean one
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
-          git fetch --no-tags origin "${{ github.base_ref }}"
-          git diff "origin/${{ github.base_ref }}...HEAD" -- src/lib \
-            | node scripts/check-engine-vocabulary.js
+          # base_ref is only set on pull_request; a push diffs the pushed range instead
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git fetch --no-tags origin "$BASE_REF"
+            range="origin/$BASE_REF...HEAD"
+          else
+            range="$BEFORE_SHA...HEAD"
+          fi
+          git diff "$range" -- src/lib | node scripts/check-engine-vocabulary.js
