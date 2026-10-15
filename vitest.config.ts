@@ -3,5 +3,5 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
 	plugins: [svelte()],
-	test: { include: ['src/**/*.test.ts'] }
+	test: { include: ['src/**/*.test.ts', 'scripts/**/*.test.js'] }
 });
