@@ -1,0 +1,50 @@
+{
+	"name": "@jasonwarrenuk/riffle",
+	"version": "0.1.0",
+	"description": "Svelte 5 reactive wrapper that turns compiled DendryNexus game data into live game state",
+	"type": "module",
+	"license": "MIT",
+	"author": "Jason Warren",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JasonWarrenUK/riffle.git"
+	},
+	"keywords": [
+		"svelte",
+		"interactive-fiction",
+		"storylets",
+		"dendry"
+	],
+	"sideEffects": false,
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*"
+	],
+	"scripts": {
+		"build": "svelte-package -i src/lib -o dist",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest run",
+		"prepublishOnly": "npm run check && npm test && npm run build"
+	},
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	},
+	"devDependencies": {
+		"@sveltejs/package": "^2.3.0",
+		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"svelte": "^5.0.0",
+		"svelte-check": "^4.0.0",
+		"typescript": "^5.5.0",
+		"vite": "^6.0.0",
+		"vitest": "^3.2.7"
+	}
+}
